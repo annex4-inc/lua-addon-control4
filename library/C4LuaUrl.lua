@@ -1,12 +1,37 @@
 ---@meta
 
+---@class UrlResponse
+---@field code number Status Code
+---@field headers table A table of all received headers and their value(s)
+---@field body string The entire response body as a string. This key is absent if a callback was set with OnBodyChunk().
+
 ---@class C4LuaUrl
----@field OnDone fun(self, OnDoneHandler: fun(self, responses, errorCode, errorMessage: string)) # Sets a callback function that will be called when the entire transfer succeeded or failed. It is only called once at the end of the entire transfer regardless of how many responses have been received. Note that this method can only be called before a transfer was started.
----@field SetOptions fun(self, options: C4LuaUrlOptions)
----@field Get fun(self, url: string, table: C4LuaUrlOptions)
+---@field OnDone fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, responses: UrlResponse[], errorCode: number, errorMessage: string)) : C4LuaUrl # Sets a callback function that will be called when the entire transfer succeeded or failed. It is only called once at the end of the entire transfer regardless of how many responses have been received. Note that this method can only be called before a transfer was started.
+---@field OnBody fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)) : C4LuaUrl # Sets a callback function that will be called each time a response body has finished transferring. This function is called after the callback functions set by OnHeaders() and OnBodyChunk() but before the callback function set by OnDone(). Note that this method can only be called before a transfer was started.
+---@field OnBodyChunk fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)) : C4LuaUrl # Sets a callback function that will be called each time a chunk of the response body has transferred. This does not necessarily correlate to chunks in the context of the HTTP "chunked" transfer encoding. This function may be called multiple times for each response, following the callback function set by OnHeaders() and before the callback function set by OnBody() and OnDone(). Note that this method can only be called before a transfer was started. This callback function is not needed for most use-cases.
+---@field OnHeaders fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)): C4LuaUrl # Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
+---@field SetOptions fun(self: C4LuaUrl, options: C4LuaUrlOptions) : C4LuaUrl # This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
+---@field SetOption fun(self: C4LuaUrl, name: string, value: any): C4LuaUrl # Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
+---@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string): C4LuaUrl
+---@field Get fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP GET transfer.
+---@field Post fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
+---@field Put fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
+---@field Delete fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP DELETE transfer.
+---@field Custom fun(self: C4LuaUrl, url: string, method: string, body: string, headers: table) : C4LuaUrl # Starts a CUSTOM HTTP transfer.
 ---@field Cancel fun()
 
 ---@class C4LuaUrlOptions
 ---@field fail_on_error boolean
----@field timeout number Timeout in seconds
----@field connect_timeout number Connection timeout in seconds
+---@field timeout number In seconds. Defaults to 300 or whatever value was set through C4:urlSetTimeout(). This is how many seconds, total, the entire transfer is allowed to take.
+---@field connect_timeout number In seconds. Defaults to 5. This is how many seconds it is allowed to take to establish the connection to the host.
+---@field ssl_verify_host boolean Defaults to true. Verify the host against the system's CA bundle when using the https protocol.
+---@field ssl_verify_peer boolean Defaults to true. Verify the peer against the system's CA bundle when using the https protocol.
+---@field ssl_cabundle string A filename relative to the .c4z that specifies a CA bundle to use instead of the system's. It is not recommended to use this option except for very special use cases because CA bundles require regular updates.
+---@field ssl_cert string A filename relative to the .c4z that specifies a SSL client certificate to use for authentication to the host.
+---@field ssl_cert_type string Defaults to "PEM". The format of the SSL certificate that the file specified by the "ssl_cert" option is in. Valid values are: "PEM" (default), "DER", "P12".
+---| "PEM"
+---| "DER"
+---| "P12"
+---@field ssl_key string A filename relative to the .c4z that specifies the private key for the client certificate specified by the "ssl_cert" option.
+---@field ssl_passwd string If the private key specified by the "ssl_key" option is encrypted, this option specifies the password.
+---@field ssl_cacerts table A table of filenames relative to the .c4z that specify additional certificates to be added to the CA bundle used to verify the host and/or peer. This allows e.g. extending the CA bundle to be able to verify against self-signed or company-signed certificates.
