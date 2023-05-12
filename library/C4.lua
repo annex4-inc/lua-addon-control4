@@ -1135,3 +1135,7 @@ function C4:GetGeoSettings() end
 ---Returns the number of milliseconds that have elapsed since the Operating System was started.
 ---@return number milliseconds
 function C4:GetTickCount() end
+
+---Creates a new C4LuaMQTT client
+---@return C4LuaMQTT
+function C4:MQTT() end
