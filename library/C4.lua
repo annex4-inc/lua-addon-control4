@@ -105,6 +105,9 @@ function C4:HMAC(digest, key, data, options) end
 ---Load a certificate and private key from a #PKCS12 file.The Lua PKCS #12 interface enables drivers to manage certificates and private keys using the PKCS #12file format. These files are encrypted and protected by a password. This ensures that cryptographic assets are secure and are not easily recovered.
 ---@param filename string Path to the #PKCS12 file to load
 ---@param password string The password for unlocking the file.
+---@return boolean result Indicates that the load operation was successful
+---@return nil | string certificateOrErr The PEM-encoded certificate or error message
+---@return string key The PEM-encoded private key
 function C4:LoadPKCS12(filename, password) end
 
 ---Performs a Password-Based Key Derivation Function 2 (PKCS#5) (PBKDF2) for a given password using the specified digest, salt, number of iterations and desired output key length.
@@ -114,16 +117,31 @@ function C4:LoadPKCS12(filename, password) end
 ---@param iterations number iterations: Number of iterations to run
 ---@param key_length number key_length: Number of bytes to generate as output
 ---@param options table options: (Optional) Options to specify encoding of inputs and outputs:
----@return string result
+---@return string result Computed HMAC value
 ---@return string | nil err description of the error that occurred.
 function C4:PBKDF2(digest, password, salt, iterations, key_length, options) end
 
 ---Sign enables drivers to crypto-graphically sign an arbitrary payload using a specified key. The API currently supports both HMAC &amp; RSA signing. Control4 strongly recommends thatdriver developers implement this new API beginning with OS Release 3.1.0. This API is the best solution to cryptographically sign a payload. Control4 recommends its use rather than other Lua libraries.
 ---@param operation string Specifies which signing operation to perform. Valid values are: HMAC: Use the HMAC (hash-based message authentication code) signing algorithm. RSA: Use the RSA (Rivest-Shamir-Adleman) signing algorithm.
+---| "HMAC"
+---| "RSA"
 ---@param digest string Identifies which digest to use when signing. This can be one of the following values: HMAC: Any supported hashing digest can be used. RSA: Must be one of SHA1, SHA224, SHA256, SHA384, SHA512, MD5, MD5_SHA1, MD2, MD4, MDC2, or RIPEMD160.
+---| "SHA1"
+---| "SHA224"
+---| "SHA256"
+---| "SHA384"
+---| "SHA512"
+---| "MD5"
+---| "MD5_SHA1"
+---| "MD2"
+---| "MD4"
+---| "MDC2"
+---| "RIPEMD160"
 ---@param key string The key to use for signing. The key_encoding option identifies the format of the key (see options below). HMAC: The key can be of any length, but cannot be empty. Control4 recommends that the size of the key be the same as the digest. For example, a 256-bit key for SHA256 or a 160-bit key for RIPEMD160. RSA: The key must be an RSA key that is valid for signing. Note that RSA public keys are typically not valid for signing.
 ---@param data string The data to be signed. The data_encoding option identifies the format of the data (see options below).
----@param options {key_encoding: string, data_encoding: string, return_encoding: string}
+---@param options {key_encoding: KeyEncoding, data_encoding: DataEncoding, return_encoding: ReturnEncoding}
+---@return string | nil result  Returns a string containing the signature or a value of nil indicates that an error occurred.
+---@return string | nil err Description of the error that occurred.
 function C4:Sign(operation, digest, key, data, options) end
 
 ---Writes a certificate and private key to a specified #PKCS12 file.The Lua PKCS #12 interface enables drivers to manage certificates and private keys using the PKCS #12file format. These files are encrypted and protected by a password. This ensures that cryptographic assets are secure and are not easily recovered.
@@ -134,7 +152,7 @@ function C4:Sign(operation, digest, key, data, options) end
 ---@param label string An optional string containing the label, or "friendly name".
 ---@param options table 
 ---@return boolean result Indicates that the write operation failed
----@return string | nil err description of the error that occurred.
+---@return string | nil err Description of the error that occurred.
 function C4:WritePKCS12(filename, password, certificate, key, label, options) end
 
 ---Function called from DriverWorks driver to add a new Event. This API should not be invoked during OnDriverInit.
@@ -277,12 +295,12 @@ function C4:AddDevice(strDriverName, nRoomId, strNewName, fnCallback) end
 function C4:AddLocation(parentId, name, type, image) end
 
 ---Note the order of the parameters passed in the Bind API. Each has a "Provider" and "Consumer" designation. The Provider designation represents the Device ID value of the device providing the data within the binding. To verify if a device driver is a Provider, go to the driver's &lt;Connections&gt; XML.This API provides the ability to create a binding between two devices: a "Provider Device" and a "Consumer Device." The binding creation through this API is the same as manually creating a binding in ComposerPro's The &lt;consumer&gt; XML tag for this device's driver will be False or: &lt;consumer&gt;False&lt;/consumer&gt;. Subsequently, the Provider Binding ID value is the Provider device's binding value.
----@param idDeviceProvider number ID value of the device providing data.
+---@param deviceIdProvider number ID value of the device providing data.
 ---@param idBindingProvider number Binding ID value of the binding for the Provider Device
----@param idDeviceConsumer number ID value of the device consuming data.
+---@param deviceIdConsumer number ID value of the device consuming data.
 ---@param idBindingConsumer number
 ---@param strClass string The binding connection class.
-function C4:Bind(idDeviceProvider, idBindingProvider, idDeviceConsumer, idBindingConsumer, strClass) end
+function C4:Bind(deviceIdProvider, idBindingProvider, deviceIdConsumer, idBindingConsumer, strClass) end
 
 ---Function to decrypt using Blowfish in ECB mode. ECB mode operates on exactly 64 bits (8 bytes) of data. This API can be invoked during OnDriverInit.
 ---@param data string Encrypted data
@@ -307,16 +325,20 @@ function C4:CallAsync(fn) end
 function C4:EvaluateExpression(logic, left, right) end
 
 ---Function that will return the directory path on the controller where driver.c4i files reside.
----@return string string Directory path.
+---@return string path Directory path.
 function C4:GetC4iDir() end
 
 ---Function that will return the directory path on the controller where driver.c4z files reside.
----@return string string Directory path.
+---@return string path Directory path.
 function C4:GetC4zDir() end
 
 ---Function that will return the directory path on the controller where log files reside.
----@return string string Directory path.
+---@return string path Directory path.
 function C4:GetLogDir() end
+
+---Returns the directory where the LUA driver will store its files.
+---@return string path Directory path.
+function C4:GetSandboxDir() end
 
 ---Returns the Project's current Time Zone in the form of a LUA string. If there is no Time Zone set for the project, such as in the case of an unidentified controller, an empty string is returned.
 ---@return string result string Time Zone in a string format.
@@ -343,13 +365,13 @@ function C4:RecordHistory(severity, eventType, category, subcategory, descriptio
 function C4:ToStringLocaleC(num) end
 
 ---This API provides the ability to unbind bound devices. The unbinding of the devices binding through this API is the same as manually unbinding two devices in ComposerPro's Connections area. Note the parameters passed in the API. Both have "Consumer" designation. These parameters represent the device that consumes data from the Provider device. To verify if a device driver is a Consumer, go to the driver's &lt;Connections&gt; XML. The &lt;consumer&gt; XML tag for this device's driver will be True or: &lt;consumer&gt;True&lt;/consumer&gt;. Subsequently, the Consumer Binding ID value is the Consumer device's binding value.
----@param idDeviceConsumer number idDeviceConsumer - ID value of the device consuming data.
+---@param deviceIdConsumer number deviceIdConsumer - ID value of the device consuming data.
 ---@param idBindingConsumer number idBindingConsumer - Binding ID value of the binding for the Consumer Device
-function C4:unbind(idDeviceConsumer, idBindingConsumer) end
+function C4:Unbind(deviceIdConsumer, idBindingConsumer) end
 
 ---"Escapes" the passed in string rendering any XML characters (only &amp;, &lt;, and &gt;) in the string as characters that are valid in an XML value. This API should not be invoked during OnDriverInit.
----@param strRawInput string strRawInput: Raw input string, with possibly invalid characters for an XML value.
----@return string string strEscaped: The passed in string, with all XML characters properly escaped.
+---@param strRawInput string Raw input string, with possibly invalid characters for an XML value.
+---@return string result The passed in string, with all XML characters properly escaped.
 function C4:XmlEscapeString(strRawInput) end
 
 ---Function called from DriverWorks driver to send an IR Code. This API should not be invoked during OnDriverInit.
@@ -389,6 +411,10 @@ function C4:ErrorLog(strLogText) end
 ---Generally, the class cleans up any resources associated with it. For example, when the object is no longer referenced, it will cleans it up. However, there are a few exceptions: When the class is performing an asynchronous operation, e.g. a connect request, it will remain alive until the appropriate event callback function is called. For instance, if you call the Connect() method, the class will remain alive until it either called the OnConnect (and OnResolve) callback function, or the OnError callback function, even if your lua code does not have any reference to the class during that time period. The same applies to the time period between calling one of the Read() methods and the corresponding OnRead() or OnError() callback, and in between calling the Write() method and the OnWrite() or OnError() callback. This API should not be invoked during OnDriverInit.
 ---@param flush boolean flush: Value that indicates whether any queued-up write requests should be sent out prior to closing the connection.
 function C4:CreateTCPClient(flush) end
+
+---Creates an instance of a C4Ping object that can be used to ping a specified endpoint.
+---@return C4Ping
+function C4:CreatePingClient() end
 
 ---This API should not be invoked during OnDriverInit.
 ---@param location string location
@@ -668,6 +694,8 @@ function C4:SendUIRequest(id, request, tParams) end
 ---Function to modify the visibility of properties as viewed from Composer. This API should not be invoked during OnDriverInit.
 ---@param name string Name of property to modify
 ---@param show number 0 (to show) or 1 (to hide)
+---| 0 # Show
+---| 1 # Hide
 function C4:SetPropertyAttribs(name, show) end
 
 ---Decrypt the input string with Corrected Block TEA (XXTEA) Algorithm, using the specified key. This API can be invoked during OnDriverInit.
@@ -711,9 +739,11 @@ function C4:GetDevicesByC4iName(string) end
 ---@param idBinding number Binding ID for the proxy you wish to send to
 ---@param strCommand string Command to send to the proxy
 ---@param tParams table Lua table containing parameters to the command.
----@param strmessage string COMMAND or NOTIFY - Overrides the default message for SendToProxy. See Note below.
----@param bool boolean Optional. When set to TRUE will allow for an empty string to be sent as a parameter value.
-function C4:SendToProxy(idBinding, strCommand, tParams, strmessage, bool) end
+---@param strMessage? string COMMAND or NOTIFY - Overrides the default message for SendToProxy. See Note below.
+---| "COMMAND" Acts as a command send to a protocol driver.
+---| "NOTIFY" Acts as a notification to a proxy.
+---@param allowEmptyValues? boolean When set to TRUE will allow for an empty string to be sent as a parameter value.
+function C4:SendToProxy(idBinding, strCommand, tParams, strMessage, allowEmptyValues) end
 
 ---Function that defines a dynamic Network Connection so no Connection XML is required. Further (port-specific configuration) can be accomplished through the use of the NetPortOptions API. Connections are actually made using the NetConnect API. This API should not be invoked during OnDriverInit.
 ---@param idBinding number id of the Network Binding to create.
@@ -723,69 +753,61 @@ function C4:CreateNetworkConnection(idBinding, strAddress, strConnectionType) en
 
 ---Returns a physical (IP) address of a network binding. This API should not be invoked during OnDriverInit
 ---@param idBinding number Binding value.
----@return string string Network address or hostname that this network connection will use.
----@return int int IP address of a network binding
+---@return string hostname Network address or hostname that this network connection will use.
+---@return number address IP address of a network binding
 function C4:GetBindingAddress(idBinding) end
 
 ---Call to retrieve the devices bound to (the consumers of) a binding provided (an output binding) by this device. This API should not be invoked during OnDriverInit.
----@param number number The id of the device to check the bindings on.
----@param number number Binding ID.
-function C4:GetBoundConsumerDevices(number, number) end
+---@param deviceId number Device ID
+---@param idBinding number Binding ID
+---@return nil | table<number, string> devices Table of device ID/name pairs of bound devices
+function C4:GetBoundConsumerDevices(deviceId, idBinding) end
 
 ---Call to retrieve what device is attached to an input binding of the specified device. This API should not be invoked during OnDriverInit.
----@param number number The id of the device to check the bindings on.
----@param number number Binding ID.
-function C4:GetBoundProviderDevice(number, number) end
+---@param deviceId number Device ID
+---@param idBinding number Binding ID
+---@return nil | table<number, string> devices Table of device ID/name pairs of bound devices
+function C4:GetBoundProviderDevice(deviceId, idBinding) end
 
 ---Function that returns the address of the master controller in a project. This API should not be invoked during OnDriverInit.
----@return string string Network address of the master controller in IP format
+---@return string address Network address of the master controller in IP format
 function C4:GetControllerNetworkAddress() end
 
 ---Returns the name of the device as shown in Composer. This API should not be invoked during OnDriverInit
----@param number number ID Value of a device. Optional
----@return string string Name of device.
-function C4:GetDeviceDisplayName(number) end
+---@param deviceId? number ID Value of a device
+---@return string name Name of device.
+function C4:GetDeviceDisplayName(deviceId) end
 
 ---Returns the MAC Address associated with a device that has already been identified in the Control4 Project. The API uses address resolution protocol (ARP) queries to lookup MAC hardware addresses. It will return a value of nil if the MAC address is not found in the controller's ARP tables. Considerations when using GetDeviceMAC include:
----@param number number Network Binding ID value for the identified device
-function C4:GetDeviceMAC(number) end
+---@param bindingId number Network Binding ID value for the identified device
+function C4:GetDeviceMAC(bindingId) end
 
 ---Returns a table that contains the device's discovery information.
 ---@param idBinding number Network Binding ID value for the identified device
 function C4:GetDiscoveryInfo(idBinding) end
 
 ---API that returns the bound address of the "device." For example, in the case of a single network binding, GetMyNetworkAddress returns the address of the device that's connected to the driver. This API should not be invoked during OnDriverInit.
----@param number number The id of the device returning network binding information.
-function C4:GetMyNetworkAddress(number) end
+---@param deviceId? number The id of the device returning network binding information.
+function C4:GetMyNetworkAddress(deviceId) end
 
 ---Function that returns network binding information for a device. 
----@param number number The id of the device returning network binding information.
-function C4:GetNetworkBindingsByDevice(number) end
+---@param deviceId number The id of the device returning network binding information.
+---@return {networkbindings: C4Connection[]}
+function C4:GetNetworkBindingsByDevice(deviceId) end
 
 ---Function that returns a table containing all of the device connections as well as data for each individual connection.
----@param table table Table containing connection information for the device and Information for each connection.
-function C4:GetNetworkConnections(table) end
+---@return {connections: C4Connection[]}
+function C4:GetNetworkConnections() end
 
 ---Returns the Proxy ID value when passed a Device ID value. This API should not be invoked during OnDriverInit.
----@param idDevice number ID value of a device. Optional
+---@param deviceId number ID value of a device
 ---@return number number Proxy ID value
-function C4:GetProxyDevicesbyID(idDevice) end
+function C4:GetProxyDevicesById(deviceId) end
 
----Returns the &lt;serialsettings&gt; string from the driver that is connected to the provided control binding. The control binding should be an RS232 provider binding. This API should not be invoked during OnDriverInit.
+---Returns the <serialsettings> string from the driver that is connected to the provided control binding. The control binding should be an RS232 provider binding. This API should not be invoked during OnDriverInit.
 ---@param idBinding number Control Binding Value
 ---@return string string Serial Settings Data in string format.
 function C4:GetSerialSettings(idBinding) end
-
----Function which dumps the data received from serial (hex format) for inspection via print. It then evaluates the response for specific delimiters and extracts the necessary components which are then used to do something. This API should not be invoked during OnDriverInit.
----@param idBinding number ID of the serial interface the data was received on
----@param strData string Data received from the serial interface
-function C4:ReceivedFromSerial(idBinding, strData) end
-
----Function which combines the data received from the network into a variable for processing when the connection status changes. This API should not be invoked during OnDriverInit.
----@param idBinding number Binding ID of the interface the data was received from
----@param nPort number Network Port the data was received on
----@param strData string Network data from the specified binding and port
-function C4:ReceivedFromNetwork(idBinding, nPort, strData) end
 
 ---Function that allows a TCP/IP device, with an existing connection, to use a different IP Address for connection purposes. This API can be used with both statically created connections (XML) as well as dynamically created ones. It is recommended that the NetConnect API is called after SetBindingAddress. This API should not be invoked during OnDriverInit.
 ---@param idBinding number Binding ID of the existing network binding
@@ -795,6 +817,8 @@ function C4:SetBindingAddress(idBinding, strIPaddress) end
 ---Function that enables a Lua driver to explicitly set the "connected" state for a connection binding. This can particularly useful for connection bindings that aren't persistent (i.e., always connected), such as HTTP. Such non-persistent connections are marked as Offline (yellow) in the Network Tools windows in Composer. The C4:SetBindingStatus function enables a driver to manage the "connected" state of a connection binding, effectively overriding the default behavior provided by Director
 ---@param idBinding number Binding ID of the existing network binding
 ---@param strStatus string String that specifies the status to set
+---| "online"
+---| "offline"
 function C4:SetBindingStatus(idBinding, strStatus) end
 
 ---Function that enables a Lua driver to send network broadcast messages. The function opens a UDP connection, sets the SO_BROADCAST socket option and then sends a specified payload to the directed broadcast address. For example, 192.168.1.255. If the directed broadcast address is unavailable for any reason then the limited broadcast address is used instead, for example: 255.255.255.255.
@@ -803,12 +827,12 @@ function C4:SetBindingStatus(idBinding, strStatus) end
 function C4:SendBroadcast(payload, port) end
 
 ---Function called from DriverWorks driver to send a Control4 CommandMessage to the specified Control4 device driver. This API should not be invoked during OnDriverInit.
----@param idDevice number Device ID of the driver you wish to send the command to.
+---@param deviceId number Device ID of the driver you wish to send the command to.
 ---@param strCommand string Command to be sent
 ---@param tParams table Lua table of parameters for the command.
----@param AllowEmptyValueslogCommand boolean allowEmptyValues (T/F) Optional. Defaults to False. TRUE will allow for an empty string to be sent as a parameter value.
----@param boolean boolean logCommand Defaults to True. False prevents this APIâ€™s content from being logged.
-function C4:SendToDevice(idDevice, strCommand, tParams, AllowEmptyValueslogCommand, bool) end
+---@param allowEmptyValues? boolean Defaults to False. True will allow for an empty string to be sent as a parameter value.
+---@param logCommand? boolean Defaults to True. False prevents this APIs content from being logged.
+function C4:SendToDevice(deviceId, strCommand, tParams, allowEmptyValues, logCommand) end
 
 ---Function which sends an HTTP request to a network binding / port. This API should not be invoked during OnDriverInit.
 ---@param idBinding number Binding ID of the network interface to send on
@@ -822,14 +846,18 @@ function C4:SendToNetwork(idBinding, nPort, strData) end
 function C4:SendToSerial(idBinding, strData) end
 
 ---Function that enables a Lua driver to broadcast a Wake-On-Lan magic packet. 
----@param macAddress macAdress MAC address of the device.
----@param port number Optional. ID of the port the WOL magic packet is broadcast. If omitted, the WOL default port 9 is used.     
+---@param macAddress string MAC address of the device.
+---@param port number ID of the port the WOL magic packet is broadcast. If omitted, the WOL default port 9 is used.     
 function C4:SendWOL(macAddress, port) end
 
 ---Function used to tell the system to make a connection (static or dynamic). Connections are created using the CreateNetworkConnection API. Further, port-specific configuration can be configured for a connection through the NetPortOptions API. This API should not be invoked during OnDriverInit.
 ---@param idBinding number Binding ID of the network interface
 ---@param nPort number Network port to connect to. If NetPortOptions API is used with NetConnect, the remaining parameters are ignored.
 ---@param strIPType string IP Type. Optional. TCP is assumed or UDP or MULTICAST
+---| "TCP"
+---| "UDP"
+---| "SSL"
+---| "MULTICAST"
 function C4:NetConnect(idBinding, nPort, strIPType) end
 
 ---Function called from DriverWorks driver to disconnect from a specific idBinding and nPort. This API should not be invoked during OnDriverInit.
@@ -849,29 +877,14 @@ function C4:NetPortOptions(idBinding, nPort, strIPType, tPortParams) end
 ---@param bIsBound boolean Whether the network binding has a bound address
 function C4:OnNetworkBindingChanged(idBinding, bIsBound) end
 
----To the right is a sample of a Driver's Connection XML. It shows the XML entries required for a static TCP type connection:
----@param nPort number TCP Socket to listen for connections on. See note below for additional port information.
----@param strDelimiter string Optional: Delimiter to separate messages. If no delimiter is specified, packets are delivered as they are received.
----@param bUseUDP boolean bUseUDP: When True, the server socket connection is a UDP server socket. The default is TCP.
-function C4:Sample TCP Connection(nPort, strDelimiter, bUseUDP) end
-
----To the right is a sample of a Driver's Connection XML. It shows the XML entries required for a static SSL type connection using two ports (443 and 444):
----@param nPort number TCP Socket to listen for connections on. See note below for additional port information.
----@param strDelimiter string Optional: Delimiter to separate messages. If no delimiter is specified, packets are delivered as they are received.
----@param bUseUDP boolean bUseUDP: When True, the server socket connection is a UDP server socket. The default is TCP.
-function C4:Sample SSL (Multi-Port) Connection(nPort, strDelimiter, bUseUDP) end
-
----This section describes the Server Sockets feature delivered in the 2.1.0 (and later) release of Control4â€™s System Software. The Server Sockets interface is a lightweight way for drivers to be to accept incoming socket connections, and process them easily.
----@param nPort number TCP Socket to listen for connections on. See note below for additional port information.
----@param strDelimiter string Optional: Delimiter to separate messages. If no delimiter is specified, packets are delivered as they are received.
----@param bUseUDP boolean bUseUDP: When True, the server socket connection is a UDP server socket. The default is TCP.
-function C4:Overview(nPort, strDelimiter, bUseUDP) end
-
 ---Creates a Server Socket, that listens on port nPort, and sends messages to the driver upon receipt of the delimiter, strDelimiter (or upon timeout). This API should not be invoked during OnDriverInit.
----@param nPort number TCP Socket to listen for connections on. See note below for additional port information.
----@param strDelimiter string Optional: Delimiter to separate messages. If no delimiter is specified, packets are delivered as they are received.
----@param bUseUDP boolean bUseUDP: When True, the server socket connection is a UDP server socket. The default is TCP.
-function C4:CreateServer(nPort, strDelimiter, bUseUDP) end
+---@param port number The port number to which the server is to be bound. If this value is zero (0), then an ephemeral port will be assigned automatically.
+---@param delimeter? string The delimiter to use when reading the socket. This can be any combination of characters. When specified, the server will automatically deliver complete payloads to the driver up to, and including, the delimiter. When empty or not otherwise specified, the server will deliver packets to the driver as they arrive.
+---@param useUDP? boolean A boolean flag indicating whether the server should be established using the UDP protocol. When false, or not otherwise specified, the server is established using the TCP stream protocol.
+---@param identifier? string A string that is associated with the instance of the server that is created. This identifier is passed as an argument to the various callbacks.
+---@return boolean result True if the server was created, false otherwise
+---@return string | nil err A string describing the error that occurred
+function C4:CreateServer(port, delimeter, useUDP, identifier) end
 
 ---Destroys any Server Sockets. This API should not be invoked during OnDriverInit.
 ---@param nPort number TCP Port to stop listening on (Should be the same as initially given)
@@ -893,65 +906,6 @@ function C4:ServerCloseClient(nHandle) end
 ---@return C4LuaTimer timer
 function C4:SetTimer(nDelay, fCallback, bRepeat) end
 
----Starts a HTTP transfer with a custom request method as specified by the method argument.
----@param url string String of the URL to perform the method on.
----@param method string String of the request method.
----@param data string String of the request body to be sent.
----@param table table A table of request headers and values to be sent.
-function C4:Custom(url, method, data, table) end
-
----Starts a HTTP DELETE transfer.
----@param url string String of the URL to perform the DELETE method on.
----@param data table A table of request headers and values to be sent.
----@param headers  
-function C4:Delete(url, data, headers) end
-
----Starts a HTTP GET transfer.
----@param url string String of the URL to perform the GET E method on.
----@param headers table A table of request headers and values to be sent.
-function C4:Get(url, headers) end
-
----Sets a callback function that will be called each time a response body has finished transferring. This function is called after the callback functions set by OnHeaders() and OnBodyChunk() but before the callback function set by OnDone(). Note that this method can only be called before a transfer was started. 
----@param func function A callback function of type func (transfer, response). Returning true from this function aborts the transfer.
-function C4:OnBody(func) end
-
----Sets a callback function that will be called each time a chunk of the response body has transferred. This does not necessarily correlate to chunks in the context of the HTTP "chunked" transfer encoding. This function may be called multiple times for each response, following the callback function set by OnHeaders() and before the callback function set by OnBody() and OnDone(). Note that this method can only be called before a transfer was started. This callback function is not needed for most use-cases.
----@param func function A callback function of type func (transfer, response, chunk). Returning true from this function aborts the transfer.
-function C4:OnBodychunk(func) end
-
----Sets a callback function that will be called when the entire transfer succeeded or failed. It is only called once at the end of the entire transfer regardless of how many responses have been received. Note that this method can only be called before a transfer was started.
----@param func function A callback function of type func(transfer, responses, errCode, errMsg).
-function C4:OnDone(func) end
-
----Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
----@param func function A callback function of type func (transfer, response, chunk). Returning true from this function aborts the transfer.
-function C4:OnHeaders(func) end
-
----Starts a HTTP POST transfer.
----@param url string String of the URL to perform the POST method on.
----@param string string String of the request body to be sent.
----@param table table A table of request headers and values to be sent.
-function C4:Post(url, string, table) end
-
----Starts a HTTP POST transfer.
----@param url string String of the URL to perform the POST method on.
----@param string string String of the request body to be sent.
----@param table table A table of request headers and values to be sent.
-function C4:Put(url, string, table) end
-
----Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
----@param name string String value of the name of the parameter.
----@param value boolean Value - Boolean value (number or string) of the parameter.
-function C4:SetOption(name, value) end
-
----This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
----@param options table Table of options and their values:
-function C4:SetOptions(options) end
-
----Returns the Ticket ID (a number) of a running transfer. If the transfer is not running, the value 0 is returned.
----@return number number A number identifying the running transfer, otherwise 0.
-function C4:TicketId() end
-
 ---Function called from a DriverWorks driver to create a Control4 variable for the driver. This API should not be invoked during OnDriverInit.
 ---@param identifier string | number A string or number that uniquely identifies the variable to be added. If a number it must be greater than zero.
 ---@param strValue string Initial value of Control4 variable
@@ -967,16 +921,16 @@ function C4:AddVariable(identifier, strValue, strVarType, bReadOnly, bHidden) en
 function C4:DeleteVariable(identifier) end
 
 ---Function called by a DriverWorks driver to get the value of a variable. This API should not be invoked during OnDriverInit.
----@param idDevice number Device ID of the device that owns the specified variable
+---@param deviceId number Device ID of the device that owns the specified variable
 ---@param idVariable number Variable ID of the specified variable
 ---@return string string String Value of the requested variable, nil if not found.
-function C4:GetVariable(idDevice, idVariable) end
+function C4:GetVariable(deviceId, idVariable) end
 
 ---Function called by a DriverWorks driver to get the value of another device's variable. This API should not be invoked during OnDriverInit.
----@param idDevice number Device ID of the device that owns the specified variable
+---@param deviceId number Device ID of the device that owns the specified variable
 ---@param idVariable number Variable ID of the specified variable
 ---@return string string String Value of the requested variable, nil if not found.
-function C4:GetDeviceVariable(idDevice, idVariable) end
+function C4:GetDeviceVariable(deviceId, idVariable) end
 
 ---Function called from a DriverWorks driver to set the value of another driver or device's variable. This API should not be invoked during OnDriverInit.
 ---@param deviceId number ID value of the device
@@ -990,17 +944,17 @@ function C4:SetDeviceVariable(deviceId, variableID, value) end
 function C4:SetVariable(identifier, value) end
 
 ---Function called from a DriverWorks driver to set a listener on a particular deviceâ€™s variable. When a listener is set on a variable, whenever the variable changes, the Lua OnWatchedVariableChanged call is called.
----@param idDevice number Device ID of the device that owns the changed variable
+---@param deviceId number Device ID of the device that owns the changed variable
 ---@param idVariable number Variable ID of the changed variable
-function C4:RegisterVariableListener(idDevice, idVariable) end
+function C4:RegisterVariableListener(deviceId, idVariable) end
 
 ---This API unregisters any/all previously registered variable listeners. It takes no arguments and returns nothing. 
 function C4:UnRegisterAllVariableListeners() end
 
 ---Function called from DriverWorks driver to remove a listener on a particular device's variable. Variable changes for the particular Device's Variable will no longer be reported. This API will not work if a variable has not been registered, added or does not exist.
----@param idDevice number Device ID of the device that owns the requested variable
+---@param deviceId number Device ID of the device that owns the requested variable
 ---@param idVariable number Variable ID of the requested variable
-function C4:UnregisterVariableListener(idDevice, idVariable) end
+function C4:UnregisterVariableListener(deviceId, idVariable) end
 
 ---Utilizes a more flexible callback-based object interface. A call to this function returns a C4LuaUrl object that can be set up with various callback functions and options. Once set up, a call to its methods: Get(), Post(), Put(), Delete(), or Custom() initiates the transfer.
 ---@return C4LuaUrl 
@@ -1062,7 +1016,7 @@ function C4:urlSetTimeout(seconds) end
 function C4:GetBlobByName(strName) end
 
 ---Lua function called to retrieve a Zigbee devices user ID. This API should not be invoked during OnDriverInit.
----@return string string String representing the EUID value
+---@return string EUID String representing the EUID value
 function C4:GetZigbeeEUID() end
 
 ---If a driver takes longer than a minute to upload the firmware data to the device, it should call C4:KeepReflashLock. This request will maintain the reflash lock while updating. If a driver does not call KeepReflashLock, the Reflash Lock will be revoked after approximately one minute. This API should not be invoked during OnDriverInit.
@@ -1080,15 +1034,8 @@ function C4:SendZigbeePacket(strPacket, nProfileID, nClusterID, nGroupID, nSourc
 ---Function to terminate the request for firmware data upon completion of update. This API should not be invoked during OnDriverInit.
 function C4:ReleaseReflashLock() end
 
----Function that causes a file to be downloaded from a URL to a specified location on the file system.
----@param url string URL to the download file.
----@param filename string The file name (without path) where the file will downloaded.
----@param subdir Directory A directory alias that the file should be downloaded to.
----@param headers table A table of request headers and values to be sent.
-function C4:DownloadFile(url, filename, subdir, headers) end
-
 ---The C4:GetHostname function returns the host name of the controller.
----@return string result Returns a string containing the host name of the controller.
+---@return string hostname Returns a string containing the host name of the controller.
 function C4:GetHostname() end
 
 ---This function returns a value indicating whether a specified network port is currently in use.
@@ -1125,7 +1072,7 @@ function C4:Unzip(file, spec, destination) end
 ---This function returns Code Items for a specified device and event.
 ---@param deviceId number
 ---@param eventId number
----@return table
+---@return {codeitems: CodeItem[]}
 function C4:GetCodeItems(deviceId, eventId) end
 
 ---This function returns all Code Items within the project.
@@ -1171,3 +1118,20 @@ function C4:CreateTLSServer(port, delimiter, options, verifyMode, cipherList, ce
 ---This API enables Lua drivers to retrieve the number of milliseconds since the epoch (1 January 1970 00:00:00 UT). See: https://en.wikipedia.org/wiki/Epoch_(computing)
 ---@return number
 function C4:GetTime() end
+
+---Returns a string containing basic information about the system. The response is equivalent to running the uname command from the command line.
+---@return string
+function C4:GetUname() end
+
+---Returns a number specifying the total number of seconds for which the system has been running. The response is equivalent to the contents of the /proc/uptime system file.
+---@return number
+function C4:GetUptime() end
+
+---Lua function that enables a Lua driver to retrieve the geo location that was retrieved from webservices. For more information
+---@return string country_code
+---@return string country_name
+function C4:GetGeoSettings() end
+
+---Returns the number of milliseconds that have elapsed since the Operating System was started.
+---@return number milliseconds
+function C4:GetTickCount() end

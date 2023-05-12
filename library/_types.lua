@@ -11,6 +11,18 @@
 ---| "HEX"
 ---| "BASE64"
 
+---@alias KeyEncoding
+---| "NONE"
+---| "HEX"
+---| "BASE64"
+---| "PEM"
+
+---@alias ReturnEncoding
+---| "NONE"
+---| "HEX"
+---| "HEX_UPPER"
+---| "BASE64"
+
 ---@class EncryptOptions
 ---@field return_encoding? DataEncoding
 ---@field key_encoding? DataEncoding
@@ -130,3 +142,45 @@
 ---@field secure boolean If set to true, this cookie is only used for https requests
 ---@field wildcard boolean If set to true, this cookie is used for any subdomains
 ---@field expires number Expiration date/time in number of seconds since the Epoch.  If this value is 0, this is session cookie.
+
+---@class C4Connection
+---@field deviceid number
+---@field type number
+---@field bindingid number
+---@field state number
+---@field port number
+---@field name string 
+---@field address string
+---@field gateway string
+---@field firmware string
+
+---@class C4NetworkBinding
+---@field deviceid number
+---@field networkbindingid number
+---@field uuid string
+---@field addr string
+---@field addresstype number
+---@field status string
+---| 'online'
+---| 'offline'
+---@field ssdptype string
+
+---@alias CodeItemType
+---| 0 # Container
+---| 1 # Command
+---| 2 # Condition
+---| 3 # Loop
+---| 4 # Else
+---| 5 # Comment
+---| 6 # Operator
+
+---@class CodeItem
+---@field id number
+---@field cmdcond {xml: string}
+---@field subitems CodeItem[]
+---@field enabled boolean
+---@field creator number
+---@field device number
+---@field type CodeItemType
+---@field display string
+---@field creatorstate string

@@ -83,6 +83,14 @@ _G.OnWatchedVariableChanged = function(idDevice, idVariable, strValue) end
 ---| "OFFLINE"
 _G.OnConnectionStatusChanged = function(idBinding, nPort, strStatus) end
 
+---The OnServerStatusChanged callback is invoked to notify a driver that the status of a server has changed. More specifically, that the server is now either online or offline.
+---@param port number The port on which the server is listening.
+---@param status string A string containing the status of the server. This is either "ONLINE" or "OFFLINE”.
+---| "ONLINE"
+---| "OFFLINE"
+---@param identifer any The identifier that was specified when the server was created with either C4:CreateServer.
+_G.OnServerStatusChanged = function(port, status, identifer) end
+
 ---The OnServerConnectionStatusChanged callback is invoked to notify a driver that either: a) a new connection has been accepted by the server; or b) a previously accepted connection is now closed.
 ---@param handle number A handle to the connection. A driver can use this handle to address the connection in subsequent calls to C4:ServerSend() and C4:ServerCloseClient().
 ---@param port number The port on which the server is listening.
@@ -121,3 +129,25 @@ _G.OnReflashLockGranted = function() end
 
 ---Function called by Director when a driver loses permission to perform a device update.
 _G.OnReflashLockRevoked = function() end
+
+_G.OnSystemEvent = function(data) end
+
+---This is a callback function that is sent to a driver when a device event is fired. The function delivers the Device ID for the device that fired the event and the Event's ID value. 
+---@param firingDeviceId number The device ID value of the device firing the event.
+---@param eventId number The fired event's ID value.
+_G.OnDeviceEvent = function(firingDeviceId, eventId) end
+
+---If the .jpeg file from the device is stored on the web or in a cloud, the GetNotificationAttachmentURL API should be included in your driver to return the URL of the file.
+---@return string URL
+_G.GetNotificationAttachmentURL = function() end
+
+---If the .jpeg file is placed on the Control4 controller by the driver, the GetNotificationAttachmentFile API should be included in your driver to return the file.
+---@return string file
+_G.GetNotificationAttachmentFile = function() end
+
+---If the .jpeg file is stored in the memory of the device, the GetNotificationAttachmentBytes API should be included in your driver to return the file. Note that this API has the potential to block data if the driver takes too long to execute the function. If it takes more than one second, a log entry will be created in the director log warning that the driver took too long.
+---@return string data Base64Encoded image data
+_G.GetNotificationAttachmentBytes = function() end
+
+---This API has been included in the event that your driver needs to do any sort of clean-up with the stored .jpeg file. It also provides a notification when the original notification has been sent. This is an optional API and only recommended if cleanup is needed. For example, if it is desirable to remove a temporary image file from your system. 
+_G.FinishedWithNotificationAttachment = function() end

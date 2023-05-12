@@ -7,3 +7,7 @@ PersistData = {}
 ---@param strHex string Text to convert to binary hex.
 ---@return string
 function tohex(strHex) end
+
+---Prints out the values of a string in both hex and ascii representation. All characters that are not ‘A-Z’ or ‘0-9’ are printed as a ‘.’ in the ascii representation. The print goes to the Lua tab on the properties page of the driver. This API can be invoked during OnDriverInit.
+---@param strDump string Text to print out in a hexdump.
+function hexdump(strDump) end

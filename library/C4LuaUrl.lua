@@ -12,13 +12,14 @@
 ---@field OnHeaders fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)): C4LuaUrl # Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
 ---@field SetOptions fun(self: C4LuaUrl, options: C4LuaUrlOptions) : C4LuaUrl # This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
 ---@field SetOption fun(self: C4LuaUrl, name: string, value: any): C4LuaUrl # Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
----@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string): C4LuaUrl
+---@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string, subdir?: string, headers?: table<string, any>): C4LuaUrl
 ---@field Get fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP GET transfer.
 ---@field Post fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
 ---@field Put fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
 ---@field Delete fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP DELETE transfer.
 ---@field Custom fun(self: C4LuaUrl, url: string, method: string, body: string, headers: table) : C4LuaUrl # Starts a CUSTOM HTTP transfer.
 ---@field Cancel fun()
+---@field TicketId fun(): number
 
 ---@class C4LuaUrlOptions
 ---@field fail_on_error boolean
