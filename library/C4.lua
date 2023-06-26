@@ -2,6 +2,93 @@
 
 C4 = {}
 
+---The AddDevice API provides the ability for a driver to add a device driver to a project. The ability to specify the location of the driver within the project as well as naming the device is also supported by the API.
+---@param strDriverName string Driver Name - Required. String of the driver name including the driver extension of .c4i or.c4z.
+---@param nRoomId? number ID value of the room where the driver will reside.
+---@param strNewName? string String of the new name of the driver.
+---@param fnCallback function A callback function must be passed as the last parameter. The callback function can be any valid function name. In the example below, a function named OnDeviceAdded has been created. In order to receive data from the AddDevice API, this function must reside in the driver. The callback function takes two parameters: deviceId and, in the case of a Proxy Device, a table to contain all of the IDs of the Proxy devices and the Protocol Driver's ID. See the example to the right.
+function C4:AddDevice(strDriverName, nRoomId, strNewName, fnCallback) end
+
+---Function called by a DriverWorks driver to add a dynamic binding (a binding added at runtime). This is typically done by security panels or other devices whose number of bindings are unknown when the driver is created.
+---@param idBinding number ID of the dynamic binding.
+---@param strType string Type of dynamic binding. Valid types include: CONTROL, PROXY
+---@param bIsProvider boolean Provider: Whether the binding is a Provider or a Consumer binding.
+---@param strName string Name of binding that will appear in Composerâ€™s connections page.
+---@param strClass string Class of dynamic binding that is being created.
+---@param bHidden boolean Hidden: Whether the dynamic binding is hidden. Should typically be false.
+---@param bAutoBind boolean AutoBind: Whether the dynamic binding should be auto-bound. Should typically be false
+function C4:AddDynamicBinding(idBinding, strType, bIsProvider, strName, strClass, bHidden, bAutoBind) end
+
+---Function called from DriverWorks driver to add a new Event. This API should not be invoked during OnDriverInit.
+---@param id number ID value of the Event
+---@param name string Event Name
+---@param description string Event Description where NAME is replaced by the driver name. See Event Description example below.
+---@return boolean return True on successful addition of the Event
+function C4:AddEvent(id, name, description) end
+
+---The AddLocation API provides the ability for a driver to add a location to a project. The locations that can be added are those available in a Control4 project. This includes:
+---@param parentId number ParentID Number - This parameter is the device id of the location (Site, Building, Floor) where the new location is to be added. For example, if adding a new building to a project, this parameter would be the Site ID. If adding a new room to a project, this parameter would be the Floor ID.
+---@param name string Name of Location - This parameter is a string value representing the name that will be used for the newly added location. For example: "New Main Floor" or "Master Bathroom". The string passed in this parameter will be displayed in the ComposerPro project tree.
+---@param type string Type of Location - This parameter is a string value that defines the type of location being added. Acceptable values include: SITE, BUILDING, FLOOR or ROOM.
+---@param image? string Image - This is an optional parameter that provides the ability to use a different image for the location. Valid images are based on the Type of Location. Available images are those images visible in ComposerPro. See Example 4. below for more information.
+function C4:AddLocation(parentId, name, type, image) end
+
+--- Adds a C4 Timer
+---@deprecated
+---@param interval number The interval in unit
+---@param unit string
+---| 'SECONDS'
+---| 'MILLISECONDS'
+---@param bRepeat boolean True to repeat, false otherwise
+---@return number id The timer identifier
+function C4:AddTimer(interval, unit, bRepeat) end
+
+---Function called from a DriverWorks driver to create a Control4 variable for the driver. This API should not be invoked during OnDriverInit.
+---@param identifier string | number A string or number that uniquely identifies the variable to be added. If a number it must be greater than zero.
+---@param strValue string Initial value of Control4 variable
+---@param strVarType VariableType String specifying the Variable Type.
+---@param bReadOnly boolean ReadOnly: Optional, defaults to FALSE
+---@param bHidden boolean Hidden: Optional, defaults to FALSE. A flag indicating whether the variable is hidden.
+---@return boolean result True Indicates that the variable was added successfully.
+---@return number id ID of the variable that was added.
+function C4:AddVariable(identifier, strValue, strVarType, bReadOnly, bHidden) end
+
+---Beginning with OS release 2.6.0, default runtime editing of encrypted drivers has been deprecated. This has been done to better protect encrypted drivers from unwanted code review or hacking. The AllowExecute API allows for the runtime editing of encrypted drivers through its setting. The API defaults to a setting of False. When set to True, the lua command window will not support entry of any data and the lua output window cannot be used as a display. Use of this API allows driver developers to build into their driver the option to enable remote execution permanently or embed the function call within your own debugging functions to allow or disallow executing of commands in Composer. This API can be invoked during OnDriverInit.
+---@param allow boolean True / False
+function C4:AllowExecute(allow) end
+
+---Function called in a DriverWorks driver to encode the specified string as a Base64-encoded string. This API can be invoked during OnDriverInit.
+---@param strToEncode string String to be encoded in Base64 encoding
+---@return string string String encoded in Base64 encoding.
+function C4:Base64Encode(strToEncode) end
+
+---Function called in a DriverWorks driver to decode the specified string from a Base64-encoded string. This API can be invoked during OnDriverInit.
+---@param strToDecode string String to be decoded from Base64 encoding
+---@return string string Decoded from Base64 encoding.
+function C4:Base64Decode(strToDecode) end
+
+---Note the order of the parameters passed in the Bind API. Each has a "Provider" and "Consumer" designation. The Provider designation represents the Device ID value of the device providing the data within the binding. To verify if a device driver is a Provider, go to the driver's &lt;Connections&gt; XML.This API provides the ability to create a binding between two devices: a "Provider Device" and a "Consumer Device." The binding creation through this API is the same as manually creating a binding in ComposerPro's The &lt;consumer&gt; XML tag for this device's driver will be False or: &lt;consumer&gt;False&lt;/consumer&gt;. Subsequently, the Provider Binding ID value is the Provider device's binding value.
+---@param deviceIdProvider number ID value of the device providing data.
+---@param idBindingProvider number Binding ID value of the binding for the Provider Device
+---@param deviceIdConsumer number ID value of the device consuming data.
+---@param idBindingConsumer number
+---@param strClass string The binding connection class.
+function C4:Bind(deviceIdProvider, idBindingProvider, deviceIdConsumer, idBindingConsumer, strClass) end
+
+---Creates a 32 bit checksum
+---@param strBuf string The buffer to checksum
+function C4:CRC32(strBuf) end
+
+---Checks for a license
+---@param strName string Name of the resource
+---@return boolean result true if valid, false otherwise
+function C4:CheckLicense(strName) end
+
+---API that makes calling functions asynchronously much easier. This API should not be invoked during OnDriverInit.
+---@param fn function Function to be called asynchronously.
+---@return boolean result True or False
+function C4:CallAsync(fn) end
+
 ---Removes a key/value pair from the Registry.
 ---@param key string The key to be removed from the Registry
 function C4:RegistryDeleteValue(key) end
@@ -155,13 +242,6 @@ function C4:Sign(operation, digest, key, data, options) end
 ---@return string | nil err Description of the error that occurred.
 function C4:WritePKCS12(filename, password, certificate, key, label, options) end
 
----Function called from DriverWorks driver to add a new Event. This API should not be invoked during OnDriverInit.
----@param id number ID value of the Event
----@param name string Event Name
----@param description string Event Description where NAME is replaced by the driver name. See Event Description example below.
----@return boolean return True on successful addition of the Event
-function C4:AddEvent(id, name, description) end
-
 ---Function called from DriverWorks driver to delete an Event. This API should not be invoked during OnDriverInit.
 ---@param id number ID value of the Event
 function C4:DeleteEvent(id) end
@@ -280,28 +360,6 @@ function C4:FileWrite(int, number, string) end
 ---@return number int Number of bytes written or -1 if there is an error.
 function C4:FileWriteString(int, string) end
 
----The AddDevice API provides the ability for a driver to add a device driver to a project. The ability to specify the location of the driver within the project as well as naming the device is also supported by the API.
----@param strDriverName string Driver Name - Required. String of the driver name including the driver extension of .c4i or.c4z.
----@param nRoomId? number ID value of the room where the driver will reside.
----@param strNewName? string String of the new name of the driver.
----@param fnCallback function A callback function must be passed as the last parameter. The callback function can be any valid function name. In the example below, a function named OnDeviceAdded has been created. In order to receive data from the AddDevice API, this function must reside in the driver. The callback function takes two parameters: deviceId and, in the case of a Proxy Device, a table to contain all of the IDs of the Proxy devices and the Protocol Driver's ID. See the example to the right.
-function C4:AddDevice(strDriverName, nRoomId, strNewName, fnCallback) end
-
----The AddLocation API provides the ability for a driver to add a location to a project. The locations that can be added are those available in a Control4 project. This includes:
----@param parentId number ParentID Number - This parameter is the device id of the location (Site, Building, Floor) where the new location is to be added. For example, if adding a new building to a project, this parameter would be the Site ID. If adding a new room to a project, this parameter would be the Floor ID.
----@param name string Name of Location - This parameter is a string value representing the name that will be used for the newly added location. For example: "New Main Floor" or "Master Bathroom". The string passed in this parameter will be displayed in the ComposerPro project tree.
----@param type string Type of Location - This parameter is a string value that defines the type of location being added. Acceptable values include: SITE, BUILDING, FLOOR or ROOM.
----@param image? string Image - This is an optional parameter that provides the ability to use a different image for the location. Valid images are based on the Type of Location. Available images are those images visible in ComposerPro. See Example 4. below for more information.
-function C4:AddLocation(parentId, name, type, image) end
-
----Note the order of the parameters passed in the Bind API. Each has a "Provider" and "Consumer" designation. The Provider designation represents the Device ID value of the device providing the data within the binding. To verify if a device driver is a Provider, go to the driver's &lt;Connections&gt; XML.This API provides the ability to create a binding between two devices: a "Provider Device" and a "Consumer Device." The binding creation through this API is the same as manually creating a binding in ComposerPro's The &lt;consumer&gt; XML tag for this device's driver will be False or: &lt;consumer&gt;False&lt;/consumer&gt;. Subsequently, the Provider Binding ID value is the Provider device's binding value.
----@param deviceIdProvider number ID value of the device providing data.
----@param idBindingProvider number Binding ID value of the binding for the Provider Device
----@param deviceIdConsumer number ID value of the device consuming data.
----@param idBindingConsumer number
----@param strClass string The binding connection class.
-function C4:Bind(deviceIdProvider, idBindingProvider, deviceIdConsumer, idBindingConsumer, strClass) end
-
 ---Function to decrypt using Blowfish in ECB mode. ECB mode operates on exactly 64 bits (8 bytes) of data. This API can be invoked during OnDriverInit.
 ---@param data string Encrypted data
 ---@return string string De-encrypted data.
@@ -311,11 +369,6 @@ function C4:blowfishEcbDecrypt(data) end
 ---@param data string De-encrypted data.
 ---@return string string Encrypted data.
 function C4:blowfishEcbEncrypt(data) end
-
----API that makes calling functions asynchronously much easier. This API should not be invoked during OnDriverInit.
----@param fn function Function to be called asynchronously.
----@return boolean result True or False
-function C4:CallAsync(fn) end
 
 ---EvaluateConditional evaluates the expression and returns a Boolean result.
 ---@param logic LogicType Operator used in the conditionals. The following strings are accepted: EQUAL, NOT_EQUAL, LESS_THAN, GREATER_THAN, GREATER_THAN_OR_EQUAL
@@ -552,30 +605,6 @@ function C4:MediaGetSongsforAlbum(number) end
 ---@param location string location
 ---@param name string name
 function C4:MediaModifySongInfo(mediaId, location, name) end
-
----Function called by a DriverWorks driver to add a dynamic binding (a binding added at runtime). This is typically done by security panels or other devices whose number of bindings are unknown when the driver is created.
----@param idBinding number ID of the dynamic binding.
----@param strType string Type of dynamic binding. Valid types include: CONTROL, PROXY
----@param bIsProvider boolean Provider: Whether the binding is a Provider or a Consumer binding.
----@param strName string Name of binding that will appear in Composerâ€™s connections page.
----@param strClass string Class of dynamic binding that is being created.
----@param bHidden boolean Hidden: Whether the dynamic binding is hidden. Should typically be false.
----@param bAutoBind boolean AutoBind: Whether the dynamic binding should be auto-bound. Should typically be false
-function C4:AddDynamicBinding(idBinding, strType, bIsProvider, strName, strClass, bHidden, bAutoBind) end
-
----Beginning with OS release 2.6.0, default runtime editing of encrypted drivers has been deprecated. This has been done to better protect encrypted drivers from unwanted code review or hacking. The AllowExecute API allows for the runtime editing of encrypted drivers through its setting. The API defaults to a setting of False. When set to True, the lua command window will not support entry of any data and the lua output window cannot be used as a display. Use of this API allows driver developers to build into their driver the option to enable remote execution permanently or embed the function call within your own debugging functions to allow or disallow executing of commands in Composer. This API can be invoked during OnDriverInit.
----@param allow boolean True / False
-function C4:AllowExecute(allow) end
-
----Function called in a DriverWorks driver to encode the specified string as a Base64-encoded string. This API can be invoked during OnDriverInit.
----@param strToEncode string String to be encoded in Base64 encoding
----@return string string String encoded in Base64 encoding.
-function C4:Base64Encode(strToEncode) end
-
----Function called in a DriverWorks driver to decode the specified string from a Base64-encoded string. This API can be invoked during OnDriverInit.
----@param strToDecode string String to be decoded from Base64 encoding
----@return string string Decoded from Base64 encoding.
-function C4:Base64Decode(strToDecode) end
 
 ---Function called from DriverWorks driver to get a capability from the driver. This API should not be invoked during OnDriverInit.
 ---@param strName string The name of the capability to retrieve
@@ -905,16 +934,6 @@ function C4:ServerCloseClient(nHandle) end
 ---@param bRepeat? boolean bRepeat Optional parameter that, if provided and set to true, the timer will fire repeatedly until canceled.
 ---@return C4LuaTimer timer
 function C4:SetTimer(nDelay, fCallback, bRepeat) end
-
----Function called from a DriverWorks driver to create a Control4 variable for the driver. This API should not be invoked during OnDriverInit.
----@param identifier string | number A string or number that uniquely identifies the variable to be added. If a number it must be greater than zero.
----@param strValue string Initial value of Control4 variable
----@param strVarType VariableType String specifying the Variable Type.
----@param bReadOnly boolean ReadOnly: Optional, defaults to FALSE
----@param bHidden boolean Hidden: Optional, defaults to FALSE. A flag indicating whether the variable is hidden.
----@return boolean result True Indicates that the variable was added successfully.
----@return number id ID of the variable that was added.
-function C4:AddVariable(identifier, strValue, strVarType, bReadOnly, bHidden) end
 
 ---Function called from a DriverWorks driver to delete a Control4 variable for the driver. This API should not be invoked during OnDriverInit
 ---@param identifier string | number A string or number that uniquely identifies the variable to be deleted.
