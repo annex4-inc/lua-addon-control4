@@ -760,13 +760,13 @@ function C4:GetBindingAddress(idBinding) end
 ---Call to retrieve the devices bound to (the consumers of) a binding provided (an output binding) by this device. This API should not be invoked during OnDriverInit.
 ---@param deviceId number Device ID
 ---@param idBinding number Binding ID
----@return nil | table<number, string> devices Table of device ID/name pairs of bound devices
+---@return table devices Table of device ID/name pairs of bound devices
 function C4:GetBoundConsumerDevices(deviceId, idBinding) end
 
 ---Call to retrieve what device is attached to an input binding of the specified device. This API should not be invoked during OnDriverInit.
 ---@param deviceId number Device ID
 ---@param idBinding number Binding ID
----@return nil | table<number, string> devices Table of device ID/name pairs of bound devices
+---@return nil | number devices Device ID
 function C4:GetBoundProviderDevice(deviceId, idBinding) end
 
 ---Function that returns the address of the master controller in a project. This API should not be invoked during OnDriverInit.

@@ -14,9 +14,9 @@
 ---@field SetOption fun(self: C4LuaUrl, name: string, value: any): C4LuaUrl # Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
 ---@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string, subdir?: string, headers?: table<string, any>): C4LuaUrl
 ---@field Get fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP GET transfer.
----@field Post fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
----@field Put fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
----@field Delete fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP DELETE transfer.
+---@field Post fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
+---@field Put fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
+---@field Delete fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP DELETE transfer.
 ---@field Custom fun(self: C4LuaUrl, url: string, method: string, body: string, headers: table) : C4LuaUrl # Starts a CUSTOM HTTP transfer.
 ---@field Cancel fun()
 ---@field TicketId fun(): number
@@ -36,3 +36,8 @@
 ---@field ssl_key string A filename relative to the .c4z that specifies the private key for the client certificate specified by the "ssl_cert" option.
 ---@field ssl_passwd string If the private key specified by the "ssl_key" option is encrypted, this option specifies the password.
 ---@field ssl_cacerts table A table of filenames relative to the .c4z that specify additional certificates to be added to the CA bundle used to verify the host and/or peer. This allows e.g. extending the CA bundle to be able to verify against self-signed or company-signed certificates.
+---@field response_headers_duplicates boolean If set to true and duplicate response headers are received, the tHeader table will have an array of string values for this header. If set to false (default) and duplicate response headers are received, only the last header received will be saved to the tHeader table. This option defaults to false.
+---@field cookies_enable boolean If set to true, enables the use of cookies.  If the cookies_use_jar option is set to true, this causes cookies to be stored in the driver's cookie jar. If set to false (default) and a Set-Cookie header is received, the cookie will neither be stored in the driver's cookie jar, nor will it be used with any redirect request that may automatically be performed. This option defaults to false.
+---@field cookies_use_jar boolean If set to true (default), uses cookies in the driver's cookie jar. If set to false, this transfer does not use any cookies that may be stored in the driver's cookie jar. This option defaults to true.
+---@field cookies_save_to_jar boolean If set to true (default), saves any new cookies to the driver's cookie jar. This may also delete expired cookies from the cookie jar. If set to false, any cookies received from this transfer will not be saved to the jar. This option defaults to true.
+---@field cookies_clear_session boolean If set to true, clears any "session" cookies (cookies with no expiration time) from this transfer prior to making the request.  This does not remove them from the driver's cookie jar, but if the cookies_save_to_jar"option is set to true, it will remove them from the cookie jar once the transfer completes. If set to false (default), session cookies are used for this transfer. This option defaults to false.
