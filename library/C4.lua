@@ -231,6 +231,13 @@ function C4:PBKDF2(digest, password, salt, iterations, key_length, options) end
 ---@return string | nil err Description of the error that occurred.
 function C4:Sign(operation, digest, key, data, options) end
 
+---Verifies a signature
+---@param key string The private key
+---@param signature string The signature
+---@param data any
+---@param options any
+function C4:PKEYVerify(key, signature, data, options) end
+
 ---Writes a certificate and private key to a specified #PKCS12 file.The Lua PKCS #12 interface enables drivers to manage certificates and private keys using the PKCS #12file format. These files are encrypted and protected by a password. This ensures that cryptographic assets are secure and are not easily recovered.
 ---@param filename string Path to the #PKCS12 file that will be created
 ---@param password string The password for securing the file.
@@ -450,11 +457,14 @@ function C4:SendIRStop(proxyId, bindingId, idIRCode) end
 ---@param formatted? boolean A boolean flag value indicating whether the resulting JSPN string is formatted using newlines and indentations. The default value is False when omitted.
 ---@param encodeArrays? boolean A boolean flag value indicating whether the tables are encoded as JSON arrays. The default value is False when omitted.
 ---@param symmetric? boolean A boolean flag value indicating whether the resulting JSON objects consist of name/value pairs in which the name must be a string (i.e, double quotes).
+---@return string result
 function C4:JsonEncode(value, formatted, encodeArrays, symmetric) end
 
 ---JSON function that takes data from the JSON formatted string message and decodes it into the Lua table. On success, this function returns a single value which is as designed. On failure, the function returns two values:
 ---@param json string A string containing the JSON to be decoded.An error will be raised if the string contains invalid JSON. The actual value returned depends on the value of the json parameter and can be any of the following: Number, String, Boolean, Table
 ---@param decodeNull? boolean Boolean flag value indicating how null values are decoded. By default (false), null values are converted to an empty table. A value of true specifies that null values are decoded as a lightuserdata object with a value of null.
+---@return string result
+---@return string error
 function C4:JsonDecode(json, decodeNull) end
 
 ---Function called from DriverWorks driver to send messages to the following log files: director.log and driver.log.
@@ -785,6 +795,11 @@ function C4:CreateNetworkConnection(idBinding, strAddress, strConnectionType) en
 ---@return string hostname Network address or hostname that this network connection will use.
 ---@return number address IP address of a network binding
 function C4:GetBindingAddress(idBinding) end
+
+---Returns a list of connections for a device
+---@param idDevice number The ID of the device
+---@return {bindings: DeviceBinding[]} bindings
+function C4:GetBindingsByDevice(idDevice) end
 
 ---Call to retrieve the devices bound to (the consumers of) a binding provided (an output binding) by this device. This API should not be invoked during OnDriverInit.
 ---@param deviceId number Device ID

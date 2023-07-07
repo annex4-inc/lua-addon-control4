@@ -184,3 +184,28 @@
 ---@field type CodeItemType
 ---@field display string
 ---@field creatorstate string
+
+---@class DeviceBindingClass
+---@field excludeids string[]
+---@field autobind boolean
+---@field class string
+---@field rank number
+
+---@class DeviceBindingBound
+---@field boundclasses string[]
+---@field deviceid number
+---@field name string
+---@field bindingid number
+
+---@class DeviceBinding
+---@field bindingclasses DeviceBindingClass[]
+---@field boundprovider? {bound: DeviceBindingBound}
+---@field boundconsumers? DeviceBindingBound[]
+---@field deviceid number
+---@field type number
+---@field bindingid number
+---@field binding_info string
+---@field flags number
+---@field isbound boolean
+---@field name string
+---@field provider boolean
