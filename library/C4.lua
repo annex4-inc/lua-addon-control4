@@ -657,7 +657,7 @@ function C4:GetDriverConfigInfo(tag) end
 function C4:GetLocale() end
 
 ---If no parameter is passed, this API returns the entire project as an .XML string. This string can then be parsed to retrieve variable IDs. The API supports several parameters (filters) that will return specific XML. This API should not be invoked during OnDriverInit.
----@vararg string Filter. Optional, Filters can be applied to GetProjectItems(). Each filter is a separate string parameter to the function. The list of filters include: ALL, LOCATIONS, PROXIES, DEVICES, AGENTS, LIMIT_DEVICE_DATA, JUST_CAPABILITIES and NO_ROOT_TAGS
+---@param ... string Filter. Optional, Filters can be applied to GetProjectItems(). Each filter is a separate string parameter to the function. The list of filters include: ALL, LOCATIONS, PROXIES, DEVICES, AGENTS, LIMIT_DEVICE_DATA, JUST_CAPABILITIES and NO_ROOT_TAGS
 ---| "ALL"
 ---| "LOCATIONS"
 ---| "PROXIES"
