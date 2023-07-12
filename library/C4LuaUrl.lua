@@ -12,7 +12,7 @@
 ---@field OnHeaders fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)): C4LuaUrl # Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
 ---@field SetOptions fun(self: C4LuaUrl, options: C4LuaUrlOptions) : C4LuaUrl # This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
 ---@field SetOption fun(self: C4LuaUrl, name: string, value: any): C4LuaUrl # Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
----@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string, subdir?: string, headers?: table<string, any>): C4LuaUrl
+---@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string, subdir?: Directory, headers?: table<string, any>): C4LuaUrl
 ---@field Get fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP GET transfer.
 ---@field Post fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
 ---@field Put fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
@@ -29,7 +29,7 @@
 ---@field ssl_verify_peer boolean Defaults to true. Verify the peer against the system's CA bundle when using the https protocol.
 ---@field ssl_cabundle string A filename relative to the .c4z that specifies a CA bundle to use instead of the system's. It is not recommended to use this option except for very special use cases because CA bundles require regular updates.
 ---@field ssl_cert string A filename relative to the .c4z that specifies a SSL client certificate to use for authentication to the host.
----@field ssl_cert_type string Defaults to "PEM". The format of the SSL certificate that the file specified by the "ssl_cert" option is in. Valid values are: "PEM" (default), "DER", "P12".
+---@field ssl_cert_type string # Defaults to 'PEM'. The format of the SSL certificate that the file specified by the 'ssl_cert' option is in. Valid values are: 'PEM' (default), 'DER', 'P12'.
 ---| "PEM"
 ---| "DER"
 ---| "P12"

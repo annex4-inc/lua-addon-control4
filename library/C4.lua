@@ -657,9 +657,17 @@ function C4:GetDriverConfigInfo(tag) end
 function C4:GetLocale() end
 
 ---If no parameter is passed, this API returns the entire project as an .XML string. This string can then be parsed to retrieve variable IDs. The API supports several parameters (filters) that will return specific XML. This API should not be invoked during OnDriverInit.
----@param string string Filter. Optional, Filters can be applied to GetProjectItems(). Each filter is a separate string parameter to the function. The list of filters include: ALL, LOCATIONS, PROXIES, DEVICES, AGENTS, LIMIT_DEVICE_DATA, JUST_CAPABILITIES and NO_ROOT_TAGS
+---@vararg string Filter. Optional, Filters can be applied to GetProjectItems(). Each filter is a separate string parameter to the function. The list of filters include: ALL, LOCATIONS, PROXIES, DEVICES, AGENTS, LIMIT_DEVICE_DATA, JUST_CAPABILITIES and NO_ROOT_TAGS
+---| "ALL"
+---| "LOCATIONS"
+---| "PROXIES"
+---| "DEVICES"
+---| "AGENTS"
+---| "LIMIT_DEVICE_DATA"
+---| "JUST_CAPABILITIES"
+---| "NO_ROOT_TAGS"
 ---@return string string Project data in XML format
-function C4:GetProjectItems(string) end
+function C4:GetProjectItems(...) end
 
 ---Function that returns the controller type used as the primary controller in a project. Returns OS Info of Windows when called from a Virtual Director environment.
 ---@return string type The system type
@@ -706,10 +714,9 @@ function C4:PersistSetValue(name, value, encrypted) end
 function C4:RemoveDynamicBinding(idBinding) end
 
 ---The RenameDevice API supports the ability to rename a device that is currently in a Control4 project from a driver. This API can be also called from a driver other than that of the device's. This supports that ability to rename project devices externally. This API should not be invoked during OnDriverInit.
----@param proxyId number The Proxy ID value of the device being renamed
----@param name number Device ID of the device being renamed.
----@param string string New device name.
-function C4:RenameDevice(proxyId, name, string) end
+---@param id number The Proxy ID or Device ID of the device being renamed
+---@param name string New device name.
+function C4:RenameDevice(id, name) end
 
 ---Function to get the ID value of the room containing the driver. This API should not be invoked during OnDriverInit.
 ---@return number int Device ID of the room containing the driver
