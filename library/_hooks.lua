@@ -29,11 +29,11 @@ _G.OnBindingChanged = function(idBinding, strClass, bIsBound, otherDeviceId, oth
 _G.OnDriverDestroyed = function(strDit) end
 
 ---Function that serves as a callback into a project after the project is loaded. If any initialization has to occur after the project is loaded, it must occur in OndriverLateInit. See the safe usage table for a list of APIs that can be invoked before OnDriverLateInit is executed.
----@param strDit InitializationMethod  	This optional parameter indicates the scenario in which the driver is initializin
+---@param strDit? InitializationMethod This optional parameter indicates the scenario in which the driver is initializin
 _G.OnDriverLateInit = function(strDit) end
 
 ---Function invoked when a driver is loaded or being updated. This API is provided for the driver developer to initialize all of the driver objects that require initialization.
----@param strDit InitializationMethod  	This optional parameter indicates the scenario in which the driver is initializing
+---@param strDit? InitializationMethod This optional parameter indicates the scenario in which the driver is initializing
 _G.OnDriverInit = function(strDit) end
 
 ---Function called by Director when a property changes value.
