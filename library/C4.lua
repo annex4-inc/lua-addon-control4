@@ -1091,10 +1091,10 @@ function C4:FileCreateDir(alias, directory) end
 
 ---Function for or moving files within certain restrictions. As part of Control4’s plan to tighten driver security, the io.popen() call has been removed. In doing this, driver developers need to use C4:File commands to accomplish what they previously did with io.popen () This API provides the ability to move files as previously done with io.popen. 
 ---@param aliasFrom Directory A path representation/alias to an allowed location as to where a file may be moved from.
----@param aliasTo Directory A path representation/alias to an allowed location as to where it will be moved to. The following table is a list of allowed aliases.
 ---@param relativeFrom string A path relative to PATH_ALIAS_FROM and the file name to be moved.
+---@param aliasTo Directory A path representation/alias to an allowed location as to where it will be moved to. The following table is a list of allowed aliases
 ---@param relativeTo string A path relative to PATH_ALIAS_TO and the file name for the destination of the file. If the file name is the same then the file name does not need to be included.
-function C4:FileMove(aliasFrom, aliasTo, relativeFrom, relativeTo) end
+function C4:FileMove(aliasFrom, relativeFrom, aliasTo, relativeTo) end
 
 ---In conjunction with O.S. release 3.3.0, this function is being restricted to allowed locations whereas previously it had full root access. As part of Control4’s plan to tighten driver security, the io.popen() call has been removed. In doing this, driver developers need to use C4:File commands to accomplish what they previously did with io.popen (). Prior to O.S. release 3.3.0, C4:FileSetDir had root access which would allow driver developers to modify anything on the file system. 
 ---@param pathOrAlias string | Directory Path representation/alias to an allowed location
@@ -1180,3 +1180,7 @@ function C4:GetTickCount() end
 ---Creates a new C4LuaMQTT client
 ---@return C4LuaMQTT
 function C4:MQTT() end
+
+---Creates a new SSH client
+---@return C4LuaSSH
+function C4:CreateSSHClient() end
