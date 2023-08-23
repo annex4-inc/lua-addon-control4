@@ -1,10 +1,24 @@
 ---@meta
 
+---@alias StringBoolean
+---| "True"
+---| "False"
+
 ---@class GetVersionInfoResult
 ---@field buildtime string
 ---@field builddate string
 ---@field buildtype string
 ---@field version string
+
+---@alias ZigbeeStatus
+---| "OFFLINE"
+---| "ONLINE"
+---| "REBOOT"
+---| "UNKNOWN"
+
+---@alias Status
+---| "ONLINE"
+---| "OFFLINE"
 
 ---@alias DataEncoding
 ---| "NONE"
@@ -97,14 +111,14 @@
 
 ---@class DeviceFilter 
 ---@field C4iNames? string CSV value of c4i names
----@field DeviceIds? string CSV value of Device IDs
+---@field DeviceIds? string | number CSV value of Device IDs or a number
 
 ---@class DeviceDefinition
 ---@field driverFileName string
 ---@field deviceName string
 ---@field roomId string
 ---@field roomName string
----@field protocol table<number, ProtocolDefinition>
+---@field protocol? table<number, ProtocolDefinition>
 
 ---@class ProtocolDefinition
 ---@field driverFileName string

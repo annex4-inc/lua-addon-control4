@@ -1,5 +1,6 @@
 ---@meta
 
+---@class C4
 C4 = {}
 
 ---The AddDevice API provides the ability for a driver to add a device driver to a project. The ability to specify the location of the driver within the project as well as naming the device is also supported by the API.
@@ -43,12 +44,16 @@ function C4:AddLocation(parentId, name, type, image) end
 ---@return number id The timer identifier
 function C4:AddTimer(interval, unit, bRepeat) end
 
+---Kill a timer
+---@param idTimer number The timer identifier
+function C4:KillTimer(idTimer) end
+
 ---Function called from a DriverWorks driver to create a Control4 variable for the driver. This API should not be invoked during OnDriverInit.
 ---@param identifier string | number A string or number that uniquely identifies the variable to be added. If a number it must be greater than zero.
 ---@param strValue string Initial value of Control4 variable
 ---@param strVarType VariableType String specifying the Variable Type.
----@param bReadOnly boolean ReadOnly: Optional, defaults to FALSE
----@param bHidden boolean Hidden: Optional, defaults to FALSE. A flag indicating whether the variable is hidden.
+---@param bReadOnly? boolean ReadOnly: Optional, defaults to FALSE
+---@param bHidden? boolean Hidden: Optional, defaults to FALSE. A flag indicating whether the variable is hidden.
 ---@return boolean result True Indicates that the variable was added successfully.
 ---@return number id ID of the variable that was added.
 function C4:AddVariable(identifier, strValue, strVarType, bReadOnly, bHidden) end
@@ -468,7 +473,7 @@ function C4:JsonEncode(value, formatted, encodeArrays, symmetric) end
 function C4:JsonDecode(json, decodeNull) end
 
 ---Function called from DriverWorks driver to send messages to the following log files: director.log and driver.log.
----@param strLogText boolean flush: Value that indicates whether any queued-up write requests should be sent out prior to closing the connection.
+---@param strLogText string flush: Value that indicates whether any queued-up write requests should be sent out prior to closing the connection.
 function C4:ErrorLog(strLogText) end
 
 ---Generally, the class cleans up any resources associated with it. For example, when the object is no longer referenced, it will cleans it up. However, there are a few exceptions: When the class is performing an asynchronous operation, e.g. a connect request, it will remain alive until the appropriate event callback function is called. For instance, if you call the Connect() method, the class will remain alive until it either called the OnConnect (and OnResolve) callback function, or the OnError callback function, even if your lua code does not have any reference to the class during that time period. The same applies to the time period between calling one of the Read() methods and the corresponding OnRead() or OnError() callback, and in between calling the Write() method and the OnWrite() or OnError() callback. This API should not be invoked during OnDriverInit.
@@ -644,7 +649,7 @@ function C4:GetDeviceID() end
 
 ---Function used to obtain a Device's variables. This API should not be invoked during OnDriverInit.
 ---@param proxyId number This is the Proxy ID or the Protocol ID assigned to the Device in the project.
----@return table result Table of all of the proxy variables or protocol variables for the Device (depending on the parameter passed) as well as all of the information for each of the variables.
+---@return table<string, DeviceVariable> #Table of all of the proxy variables or protocol variables for the Device (depending on the parameter passed) as well as all of the information for each of the variables.
 function C4:GetDeviceVariables(proxyId) end
 
 ---Function that returns the XML contents of a driver's config.xml file. This API should not be invoked during OnDriverInit.
@@ -734,7 +739,7 @@ function C4:SendDataToUI(xml) end
 ---@param id number Proxy or protocol ID value of the driver receiving the SendUIRequest
 ---@param request string Request to send in string format
 ---@param tParams table Table containing values sent with the request. If no values are needed an empty table must be sent.
----@return string result Data is returned to the driver sending the SendUIRequest in XML format.
+---@return string #Data is returned to the driver sending the SendUIRequest in XML format.
 function C4:SendUIRequest(id, request, tParams) end
 
 ---Function to modify the visibility of properties as viewed from Composer. This API should not be invoked during OnDriverInit.
@@ -784,7 +789,7 @@ function C4:GetDevicesByC4iName(string) end
 ---Function called from DriverWorks driver to send a Control4 BindMessage to the proxy bound to the specified binding. This API should not be invoked during OnDriverInit. 
 ---@param idBinding number Binding ID for the proxy you wish to send to
 ---@param strCommand string Command to send to the proxy
----@param tParams table Lua table containing parameters to the command.
+---@param tParams table | string Lua table containing parameters to the command.
 ---@param strMessage? string COMMAND or NOTIFY - Overrides the default message for SendToProxy. See Note below.
 ---| "COMMAND" Acts as a command send to a protocol driver.
 ---| "NOTIFY" Acts as a notification to a proxy.
@@ -878,7 +883,7 @@ function C4:SetBindingStatus(idBinding, strStatus) end
 function C4:SendBroadcast(payload, port) end
 
 ---Function called from DriverWorks driver to send a Control4 CommandMessage to the specified Control4 device driver. This API should not be invoked during OnDriverInit.
----@param deviceId number Device ID of the driver you wish to send the command to.
+---@param deviceId number | string Device ID of the driver you wish to send the command to.
 ---@param strCommand string Command to be sent
 ---@param tParams table Lua table of parameters for the command.
 ---@param allowEmptyValues? boolean Defaults to False. True will allow for an empty string to be sent as a parameter value.
@@ -898,7 +903,7 @@ function C4:SendToSerial(idBinding, strData) end
 
 ---Function that enables a Lua driver to broadcast a Wake-On-Lan magic packet. 
 ---@param macAddress string MAC address of the device.
----@param port number ID of the port the WOL magic packet is broadcast. If omitted, the WOL default port 9 is used.     
+---@param port? number ID of the port the WOL magic packet is broadcast. If omitted, the WOL default port 9 is used.     
 function C4:SendWOL(macAddress, port) end
 
 ---Function used to tell the system to make a connection (static or dynamic). Connections are created using the CreateNetworkConnection API. Further, port-specific configuration can be configured for a connection through the NetPortOptions API. This API should not be invoked during OnDriverInit.
@@ -1138,7 +1143,8 @@ function C4:GetBootID() end
 ---| "URL"
 ---| "OID"
 ---| "X500DN"
----@param name string
+---@param name? string
+---@return string
 function C4:UUID(type, hash, namespace, name) end
 
 ---This function enables a Lua driver to create a secure SSL/TLS server that listens for incoming connections on a specified port. The driver needs to provide its own cert/key/CA. This step is left up to the driver writer. This API was modified in conjunction with O.S. 3.3.1 to accommodate the addition of an identifier that is associated with an instance of a server. This identifier enables a Lua driver to determine which instance of a server is active.

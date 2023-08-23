@@ -78,25 +78,19 @@ _G.OnWatchedVariableChanged = function(idDevice, idVariable, strValue) end
 ---Function based on this return from the system used to process communication.
 ---@param idBinding number ID of the network binding whose status has changed
 ---@param nPort number Port number whose status has changed
----@param strStatus string Status
----| "ONLINE"
----| "OFFLINE"
+---@param strStatus Status Status
 _G.OnConnectionStatusChanged = function(idBinding, nPort, strStatus) end
 
 ---The OnServerStatusChanged callback is invoked to notify a driver that the status of a server has changed. More specifically, that the server is now either online or offline.
 ---@param port number The port on which the server is listening.
----@param status string A string containing the status of the server. This is either "ONLINE" or "OFFLINE”.
----| "ONLINE"
----| "OFFLINE"
+---@param status Status A string containing the status of the server. This is either "ONLINE" or "OFFLINE”.
 ---@param identifer any The identifier that was specified when the server was created with either C4:CreateServer.
 _G.OnServerStatusChanged = function(port, status, identifer) end
 
 ---The OnServerConnectionStatusChanged callback is invoked to notify a driver that either: a) a new connection has been accepted by the server; or b) a previously accepted connection is now closed.
 ---@param handle number A handle to the connection. A driver can use this handle to address the connection in subsequent calls to C4:ServerSend() and C4:ServerCloseClient().
 ---@param port number The port on which the server is listening.
----@param status string Status
----| "ONLINE"
----| "OFFLINE"
+---@param status Status Status
 ---@param address string The IP address of the remote endpoint that is connected to the server.
 ---@param identifier string The identifier that was specified when the server was created with C4:CreateServer.
 _G.OnServerConnectionStatusChanged = function(handle, port, status, address, identifier) end
@@ -115,11 +109,7 @@ _G.OnServerDataIn = function(handle, data, address, port, identifier) end
 _G.OnNetworkBindingChanged = function(idBinding, bIsBound) end
 
 ---This function gets called when the Online status of a Zigbee node changes.
----@param strStatus string Status
----| "OFFLINE"
----| "ONLINE"
----| "REBOOT"
----| "UNKNOWN"
+---@param strStatus ZigbeeStatus Status
 ---@param strVersion string Version
 ---@param strSkew string Skew
 _G.OnZigbeeOnlineStatusChanged = function(strStatus, strVersion, strSkew) end

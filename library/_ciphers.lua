@@ -1,3 +1,5 @@
+---@meta
+
 ---@alias Cipher
 ---| "AES-128-CBC"
 ---| "AES-128-CFB"

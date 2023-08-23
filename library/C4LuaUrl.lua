@@ -1,25 +1,89 @@
 ---@meta
 
+---@class C4LuaUrl
+local class = {}
+
+---Sets a callback function that will be called when the entire transfer succeeded or failed. It is only called once at the end of the entire transfer regardless of how many responses have been received. Note that this method can only be called before a transfer was started.
+---@param callback fun(self: C4LuaUrl, responses: UrlResponse[], errorCode: number, errorMessage: string)
+---@return C4LuaUrl
+function class:OnDone(callback) end
+
+---Sets a callback function that will be called each time a response body has finished transferring. This function is called after the callback functions set by OnHeaders() and OnBodyChunk() but before the callback function set by OnDone(). Note that this method can only be called before a transfer was started.
+---@param callback fun(self: C4LuaUrl, response: UrlResponse)
+---@return C4LuaUrl
+function class:OnBody(callback) end
+
+---Sets a callback function that will be called each time a chunk of the response body has transferred. This does not necessarily correlate to chunks in the context of the HTTP "chunked" transfer encoding. This function may be called multiple times for each response, following the callback function set by OnHeaders() and before the callback function set by OnBody() and OnDone(). Note that this method can only be called before a transfer was started. This callback function is not needed for most use-cases.
+---@param callback fun(self: C4LuaUrl, response: UrlResponse)
+---@return C4LuaUrl
+function class:OnBodyChunk(callback) end
+
+---Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
+---@param callback fun(self: C4LuaUrl, response: UrlResponse)
+---@return C4LuaUrl
+function class:OnHeaders(callback) end
+
+---This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
+---@param options C4LuaUrlOptions
+---@return C4LuaUrl
+function class:SetOptions(options) end
+
+---Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
+---@param name string
+---@param value any
+---@return C4LuaUrl
+function class:SetOption(name, value) end
+
+---Function that causes a file to be downloaded from a URL to a specified location on the file system.
+---@param url string
+---@param filename string
+---@param subdir? Directory
+---@param headers? table<string, any>
+function class:DownloadFile(url, filename, subdir, headers) end
+
+---Starts a HTTP GET transfer.
+---@param url string
+---@param headers table<string, any>
+function class:Get(url, headers) end
+
+---Starts a HTTP POST transfer.
+---@param url string
+---@param body string
+---@param headers table
+function class:Post(url, body, headers) end
+
+---Starts a HTTP PUT transfer.
+---@param url string
+---@param body string
+---@param headers table
+function class:Put(url, body, headers) end
+
+---Starts a HTTP DELETE transfer.
+---@param url string
+---@param body string
+---@param headers table
+---@return C4LuaUrl
+function class:Delete(url, body, headers) end
+
+---Starts a CUSTOM HTTP transfer.
+---@param url string
+---@param method string
+---@param body string
+---@param headers table
+---@return C4LuaUrl
+function class:Custom(url, method, body, headers) end
+
+---Cancels a transfer that has been started by a call to the Get(), Post(), Put(), Delete(), or Custom() methods.
+---@return C4LuaUrl
+function class:Cancel() end
+
+---@return number
+function class:TicketId() end
+
 ---@class UrlResponse
 ---@field code number Status Code
 ---@field headers table A table of all received headers and their value(s)
 ---@field body string The entire response body as a string. This key is absent if a callback was set with OnBodyChunk().
-
----@class C4LuaUrl
----@field OnDone fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, responses: UrlResponse[], errorCode: number, errorMessage: string)) : C4LuaUrl # Sets a callback function that will be called when the entire transfer succeeded or failed. It is only called once at the end of the entire transfer regardless of how many responses have been received. Note that this method can only be called before a transfer was started.
----@field OnBody fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)) : C4LuaUrl # Sets a callback function that will be called each time a response body has finished transferring. This function is called after the callback functions set by OnHeaders() and OnBodyChunk() but before the callback function set by OnDone(). Note that this method can only be called before a transfer was started.
----@field OnBodyChunk fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)) : C4LuaUrl # Sets a callback function that will be called each time a chunk of the response body has transferred. This does not necessarily correlate to chunks in the context of the HTTP "chunked" transfer encoding. This function may be called multiple times for each response, following the callback function set by OnHeaders() and before the callback function set by OnBody() and OnDone(). Note that this method can only be called before a transfer was started. This callback function is not needed for most use-cases.
----@field OnHeaders fun(self: C4LuaUrl, fn: fun(self: C4LuaUrl, response: UrlResponse)): C4LuaUrl # Sets a callback function that will be called each time all of the headers of a response have been received but, before the response body has been received. This function may be called multiple times, e.g. due to redirects. Note that this method can only be called before a transfer was started.
----@field SetOptions fun(self: C4LuaUrl, options: C4LuaUrlOptions) : C4LuaUrl # This API is similar to the SetOption() method, but allows the driver to pass in a table of options and their values. Note that this method can only be called before a transfer was started.
----@field SetOption fun(self: C4LuaUrl, name: string, value: any): C4LuaUrl # Sets one option specified by name to value. Note that this method can only be called before a transfer was started. 
----@field DownloadFile fun(self: C4LuaUrl, url: string, filename: string, subdir?: Directory, headers?: table<string, any>): C4LuaUrl
----@field Get fun(self: C4LuaUrl, url: string, headers: table) : C4LuaUrl # Starts a HTTP GET transfer.
----@field Post fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP POST transfer.
----@field Put fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP PUT transfer.
----@field Delete fun(self: C4LuaUrl, url: string, body: string, headers: table) : C4LuaUrl # Starts a HTTP DELETE transfer.
----@field Custom fun(self: C4LuaUrl, url: string, method: string, body: string, headers: table) : C4LuaUrl # Starts a CUSTOM HTTP transfer.
----@field Cancel fun()
----@field TicketId fun(): number
 
 ---@class C4LuaUrlOptions
 ---@field fail_on_error? boolean
@@ -41,3 +105,5 @@
 ---@field cookies_use_jar? boolean If set to true (default), uses cookies in the driver's cookie jar. If set to false, this transfer does not use any cookies that may be stored in the driver's cookie jar. This option defaults to true.
 ---@field cookies_save_to_jar? boolean If set to true (default), saves any new cookies to the driver's cookie jar. This may also delete expired cookies from the cookie jar. If set to false, any cookies received from this transfer will not be saved to the jar. This option defaults to true.
 ---@field cookies_clear_session? boolean If set to true, clears any "session" cookies (cookies with no expiration time) from this transfer prior to making the request.  This does not remove them from the driver's cookie jar, but if the cookies_save_to_jar"option is set to true, it will remove them from the cookie jar once the transfer completes. If set to false (default), session cookies are used for this transfer. This option defaults to false.
+
+local url = C4:url()

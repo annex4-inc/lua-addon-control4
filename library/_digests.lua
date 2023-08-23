@@ -1,3 +1,5 @@
+---@meta
+
 ---@alias Digest
 ---| "BLAKE2b512"
 ---| "BLAKE2s256"
