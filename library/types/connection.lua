@@ -1,0 +1,21 @@
+---@class PortOptions
+---@field AUTO_CONNECT? boolean | StringBoolean Corresponds to the <auto_connect> setting defined in the .c4i file. Specifies that Director should automatically attempt the connectIon.
+---@field MONITOR_CONNECTION? boolean | StringBoolean Corresponds to the <monitor_connection> setting defined in the .c4i file. Specifies that Director should monitor the connectIon by periodically polling. Director invokes the OnPoll method for a driver to inform the driver that it should poll the connectIon.
+---@field KEEP_CONNECTION? boolean | StringBoolean Corresponds to the <keep_connectIon> setting defined in the .c4i file. Specifies that Director should automatically attempt to reestablish a connectIon if it drops.
+---@field KEEP_ALIVE? boolean | StringBoolean  Corresponds to the <keep_alive> setting defined in the .c4i file. Specifies that Director should enable TCP keep-alive for the connectIon.
+---@field DELIMETER? string Delimiter to separate messages. If no delimiter is specified, packets are delivered as they are received.
+---@field CERTIFICATE? string Path to the certificate to use for the connection. The path is relative to the driver’s .c4z location.
+---@field PRIVATE_KEY? string Path to the private key to use for the connection. The path is relative to the driver’s .c4z location.
+---@field MIRROR_UDP_PORT? boolean | StringBoolean The use of the mirror udp port parameter defaults to false. Setting this to true will use the value assigned in the nPort parameter of the NetPortOptions function (which is the destination port) as the source port value. Meaning that the data packets will be sent from and received on port values that are the same. Note that MIRROR UPD PORT is only available through Port Options on Dynamically created connections. Statically created connection do not support he use of MIRROR UPD PORT being set to true.
+---@field PROTECTED? boolean | StringBoolean  If the “protected” value is “True”, then Director will invoke the following callback to retrieve the password from the driver:
+---@field CACERTFILE? string Path to the CA (certificate authority) certificate to use for the connection. The path is relative to the driver’s C4Z location.
+---@field SUPPRESS_CONNECTION_EVENTS? boolean | StringBoolean True or false to suppress connections. Optionally used device driver property that dictates whether or not Director will fire the OnDeviceOnline and OnDeviceOffline system events. While these events are not specifically handled within a driver, they can impact system performance. This is especially true when a large amount of media is present or media availability (regardless of a device’s online status) is a requirement. When these events are fired, the Room Driver clears its media cache. The media cache then must be rebuilt when a device comes back online. Unless the exercise of clearing and rebuilding the cache is needed, setting to “True” is recommended.
+---@field VERIFY_MODE? string #Specifies the verification mode to use for the connection. The verify mode corresponds to those supported by OpenSSL. A detailed description of the verification modes can be found here: https://www.openssl.org. Note that Control4 currently supports only the peer verification mode (SSL VERIFY PEER). Values include: none and peer. Note that if this property is omitted, then Director defaults to use no verification (“none”).
+---| "none"
+---| "peer"
+---@field VERIFY_METHOD? string #Specifies the method to use for establishing the connection. A detailed description of the various methods can be found at https://www.openssl.org Valid values include: sslv2, sslv23, sslv3, tlsv1 & tlsv1_1_. Note that if this property is omitted, then Director defaults to using sslv23 (which is the OpenSSL default).
+---| "sslv2"
+---| "sslv23" Default
+---| "sslv3"
+---| "tlsv1"
+---| "tlsv1_1_"

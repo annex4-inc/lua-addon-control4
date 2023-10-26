@@ -909,11 +909,7 @@ function C4:SendWOL(macAddress, port) end
 ---Function used to tell the system to make a connection (static or dynamic). Connections are created using the CreateNetworkConnection API. Further, port-specific configuration can be configured for a connection through the NetPortOptions API. This API should not be invoked during OnDriverInit.
 ---@param idBinding number Binding ID of the network interface
 ---@param nPort number Network port to connect to. If NetPortOptions API is used with NetConnect, the remaining parameters are ignored.
----@param strIPType string IP Type. Optional. TCP is assumed or UDP or MULTICAST
----| "TCP"
----| "UDP"
----| "SSL"
----| "MULTICAST"
+---@param strIPType ConnectionType IP Type. Optional. TCP is assumed or UDP or MULTICAST
 function C4:NetConnect(idBinding, nPort, strIPType) end
 
 ---Function called from DriverWorks driver to disconnect from a specific idBinding and nPort. This API should not be invoked during OnDriverInit.
@@ -925,7 +921,7 @@ function C4:NetDisconnect(idBinding, nPort) end
 ---@param idBinding number Binding ID of the network interface to disconnect from
 ---@param nPort number Network port.
 ---@param strIPType string Network Connection type. For example, TCP/SSL or UDP.
----@param tPortParams table lua table of Key/Value pairs that contain all of the parameters for the specific Port. These parameters include:
+---@param tPortParams PortOptions Lua table of Key/Value pairs that contain all of the parameters for the specific port.
 function C4:NetPortOptions(idBinding, nPort, strIPType, tPortParams) end
 
 ---Function called by Director when a network connection has been addressed (â€˜identifiedâ€™ on Network Connections Page) or unaddressed (â€˜disconnectâ€™).

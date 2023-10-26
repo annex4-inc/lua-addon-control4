@@ -223,3 +223,9 @@
 ---@field isbound boolean
 ---@field name string
 ---@field provider boolean
+
+---@alias ConnectionType
+---| "TCP"
+---| "UDP"
+---| "SSL"
+---| "MULTICAST"
